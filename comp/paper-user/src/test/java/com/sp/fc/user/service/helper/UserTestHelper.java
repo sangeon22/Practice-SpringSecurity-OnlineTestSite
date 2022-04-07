@@ -19,7 +19,7 @@ public class UserTestHelper {
 
     private final PasswordEncoder passwordEncoder; //  = NoOpPasswordEncoder.getInstance();
 
-
+    // test용 유저를 만들어준다.
     public static User makeUser(School school, String name){
         return User.builder()
                 .school(school)
@@ -29,18 +29,21 @@ public class UserTestHelper {
                 .build();
     }
 
+
     public User createUser(School school, String name){
         User user = makeUser(school, name);
         user.setPassword(passwordEncoder.encode(name+"123"));
         return userService.save(user);
     }
 
+    // authority 리스트를 줘서 유저를 만들도록 함
     public User createUser(School school, String name, String ... authorities){
         User user = createUser(school, name);
         Stream.of(authorities).forEach(auth->userService.addAuthority(user.getUserId(), auth));
         return user;
     }
 
+    // teacher를 만듬
     public User createTeacher(School school, String name){
         User teacher = createUser(school, name);
         userService.addAuthority(teacher.getUserId(), Authority.ROLE_TEACHER);
@@ -51,6 +54,7 @@ public class UserTestHelper {
         assertUser(school, teacher, name, Authority.ROLE_TEACHER);
     }
 
+    // student를 만듬
     public User createStudent(School school, User teacher, String name, String grade){
         User student = User.builder()
                 .school(school)
