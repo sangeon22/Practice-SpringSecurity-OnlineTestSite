@@ -24,16 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
+ 유저
 
- 사용자 생성
- 이름 수정
- 권한 부여
- 권한 취소
- email검색
- role 중복해서 추가되지 않는다.
- email이 중복되어서 들어가는가?
+ - 사용자를 생성 한다.
+ - 이름을 수정할 수 있다.
+ - 권한을 주면 권한이 주어진다.
+ - 권한을 취소하면 권한이 취소된다.
+ - email로 검색할 수 있다.
+ - role이 중복해서 추가되지 않는다.
+ - email이 중복되어서 등록되지 않는다.
 
- */
+ **/
 @DataJpaTest
 public class UserTest extends WithUserTest {
 
@@ -99,6 +100,7 @@ public class UserTest extends WithUserTest {
         userTestHelper.assertUser(school, savedUser, "user1", Authority.ROLE_STUDENT);
     }
 
+    //email이 unique로 지정했기때문에
     @DisplayName("7. email이 중복되어서 들어가는가?")
     @Test
     void 이메일_중복문제 () {

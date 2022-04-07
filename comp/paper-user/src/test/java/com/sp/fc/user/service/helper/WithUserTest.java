@@ -26,6 +26,7 @@ public class WithUserTest {
 
     private boolean prepared;
 
+    //userTset에서 BeforeEach에서 prePaerService를 호출함
     protected void prepareUserServices (){
         if(prepared) return;
         prepared = true;

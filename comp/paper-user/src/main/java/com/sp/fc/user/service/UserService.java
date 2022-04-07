@@ -28,6 +28,7 @@ public class UserService {
     private final SchoolRepository schoolRepository;
     private final UserRepository userRepository;
 
+    // user 저장
     public User save(User user) throws DataIntegrityViolationException {
         if(user.getUserId() == null){
             user.setCreated(LocalDateTime.now());
@@ -40,15 +41,18 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+    // 페이징된 유저에 대한 서치 메서드
     public Page<User> listUser(int pageNum, int size){
         return userRepository.findAll(PageRequest.of(pageNum-1, size));
     }
 
+    // userid 리스트를 주면, 검색된 데이터를 맵으로 준다.
     public Map<Long, User> getUsers(List<Long> userIds){
         return StreamSupport.stream(userRepository.findAllById(userIds).spliterator(), false)
                 .collect(Collectors.toMap(User::getUserId, Function.identity()));
     }
 
+    // 유저에게 Authority를 주거나 뺄 때 Authority가 겹치지 않도록 방지
     public void addAuthority(Long userId, String authority){
         userRepository.findById(userId).ifPresent(user->{
             Authority newRole = new Authority(user.getUserId(), authority);
@@ -81,6 +85,7 @@ public class UserService {
         });
     }
 
+    // userRepository에 있는 메소드들을 랩핑함
     public void updateUsername(Long userId, String userName) {
         userRepository.updateUserName(userId, userName, LocalDateTime.now());
     }
@@ -113,6 +118,7 @@ public class UserService {
         return userRepository.findAllBySchool(schoolId, Authority.ROLE_TEACHER);
     }
 
+    // userId로 소속을 바꿀때
     public void updateUserSchoolTeacher(Long userId, Long schoolId, Long teacherId) {
         userRepository.findById(userId).ifPresent(user->{
             if(!user.getSchool().getSchoolId().equals(schoolId)) {

@@ -16,6 +16,7 @@ public class PaperUserTestApp {
         SpringApplication.run(PaperUserTestApp.class, args);
     }
 
+    // @DataJpaTest이기 때문에 아래 confiuration을 enable시켜놓음
     @Configuration
     @ComponentScan("com.sp.fc.user")
     @EnableJpaRepositories(basePackages = {
