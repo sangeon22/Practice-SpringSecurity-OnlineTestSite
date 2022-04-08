@@ -27,6 +27,7 @@ public class PaperTemplateService {
     private final PaperTemplateRepository paperTemplateRepository;
     private final ProblemService problemService;
 
+    // PaperTemplate save
     public PaperTemplate save(PaperTemplate paperTemplate) {
         if(paperTemplate.getPaperTemplateId() == null){
             paperTemplate.setCreated(LocalDateTime.now());
@@ -35,17 +36,22 @@ public class PaperTemplateService {
         return paperTemplateRepository.save(paperTemplate);
     }
 
+    //시험지에 문제를 추가
     public Problem addProblem(long paperTemplateId, Problem problem){
         problem.setPaperTemplateId(paperTemplateId);
+        //paperTemplateId로 템플릿을 가져온 후,
         return findById(paperTemplateId).map(paperTemplate -> {
             if(paperTemplate.getProblemList() == null){
                 paperTemplate.setProblemList(new ArrayList<>());
             }
+            //problem list에 문제를 추가
             problem.setCreated(LocalDateTime.now());
             paperTemplate.getProblemList().add(problem);
+            //앞에서부터 가져온 순서대로 indexNum을 부여한다. 문제번호 부여
             IntStream.rangeClosed(1, paperTemplate.getProblemList().size()).forEach(i->{
                 paperTemplate.getProblemList().get(i-1).setIndexNum(i);
             });
+            // total size를 업데이트할 때 마다 추가하도록 한 후 저장
             paperTemplate.setTotal(paperTemplate.getProblemList().size());
             Problem saved = problemService.save(problem);
             save(paperTemplate);
@@ -53,15 +59,19 @@ public class PaperTemplateService {
         }).orElseThrow(()-> new IllegalArgumentException(paperTemplateId+" 아이디 시험지가 없습니다."));
     }
 
-    public Optional<PaperTemplate> findById(long paperTemplateId) {
+
+    //PaperTemplate을 찾아오는 것것
+   public Optional<PaperTemplate> findById(long paperTemplateId) {
         return paperTemplateRepository.findById(paperTemplateId);
     }
 
+    //
     public PaperTemplate removeProblem(long paperTemplateId, long problemId){
         return findById(paperTemplateId).map(paperTemplate -> {
             if(paperTemplate.getProblemList() == null){
                 return paperTemplate;
             }
+            // problem list에서 해당 번호를 가진 문제가 존재한다면 삭제하도록록
             Optional<Problem> problem = paperTemplate.getProblemList().stream().filter(p -> p.getProblemId().equals(problemId)).findFirst();
             if(problem.isPresent()){
                 paperTemplate.setProblemList(
@@ -79,11 +89,12 @@ public class PaperTemplateService {
     }
 
 
+    // problem의 내용을 수정하는 것
     public void update(long problemId, String content, String answer){
         problemService.updateProblem(problemId, content, answer);
     }
 
-//    @PostAuthorize("returnObject.isEmpty() || returnObject.get().userId == principal.userId")
+    // ProblemTemplate을 id로 찾아오는 것
     @Transactional(readOnly = true)
     public Optional<PaperTemplate> findProblemTemplate(Long paperTemplateId) {
         return paperTemplateRepository.findById(paperTemplateId).map(pt->{
@@ -100,6 +111,7 @@ public class PaperTemplateService {
         });
     }
 
+    // 정답을 체크하기 위한 Map
     @Transactional(readOnly = true)
     public Map<Integer, String> getPaperAnswerSheet(Long paperTemplateId) {
         Optional<PaperTemplate> template = findById(paperTemplateId);
@@ -107,6 +119,7 @@ public class PaperTemplateService {
         return template.get().getProblemList().stream().collect(Collectors.toMap(Problem::getIndexNum, Problem::getAnswer));
     }
 
+    // teacherId로 template을 가져옴
     @Transactional(readOnly = true)
     public List<PaperTemplate> findByTeacherId(Long userId) {
         return paperTemplateRepository.findAllByUserIdOrderByCreatedDesc(userId);

@@ -17,6 +17,7 @@ public class ProblemService {
 
     private final ProblemRepository problemRepository;
 
+    // problem 저장
     public Problem save(Problem problem) {
         if(problem.getProblemId() == null){
             problem.setCreated(LocalDateTime.now());
@@ -25,6 +26,7 @@ public class ProblemService {
         return problemRepository.save(problem);
     }
 
+    // problem find
     public Optional<Problem> findProblem(Long problemId){
         return problemRepository.findById(problemId);
     }
@@ -33,10 +35,12 @@ public class ProblemService {
         return problemRepository.findAllByPaperTemplateIdOrderByIndexNumAsc(paperTemplateId);
     }
 
+    // problem 삭제
     public void delete(Problem problem) {
         problemRepository.delete(problem);
     }
 
+    // problem 수정
     public void updateProblem(long problemId, String content, String answer) {
         problemRepository.updateProblem(problemId, content, answer, LocalDateTime.now());
     }

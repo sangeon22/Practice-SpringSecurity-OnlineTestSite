@@ -39,6 +39,7 @@ public class PaperService {
         return paperRepository.save(paper);
     }
 
+    // 학생들에게 studentId list를 주고 시험지를 나눠줄 때 이 메소드를 호출
     @Transactional
     public List<Paper> publishPaper(long paperTemplateId, List<Long> studyIdList){
         List<Paper> papers = paperTemplateService.findById(paperTemplateId).map(paperTemplate ->
@@ -58,6 +59,8 @@ public class PaperService {
         return papers;
     }
 
+    // paper를 remove
+    // paper에 연결된 answer들은 동시에 삭제
     public void removePaper(long paperTemplateId, List<Long> studyIdList){
         paperRepository.findAllByPaperTemplateIdAndStudyUserIdIn(paperTemplateId, studyIdList)
                 .forEach(paper -> {
@@ -65,18 +68,22 @@ public class PaperService {
                 });
     }
 
+    // paperId로 paper를 찾은 뒤,
     @Transactional
     public void answer(Long paperId, Long problemId, int num, String answer){
         paperRepository.findById(paperId).ifPresentOrElse(paper->{
+            //해당 paper answer가 있는지 조사
             Optional<PaperAnswer> pa = paper.getPaperAnswerList() == null ? Optional.empty() :
                     paper.getPaperAnswerList().stream().filter(a -> a.getId().getNum() == num).findFirst();
             if(pa.isPresent()){
+                //있으면 마킹한 내용을 업데이트
                 PaperAnswer pAnswer = pa.get();
                 pAnswer.setAnswer(answer);
                 pAnswer.setAnswered(LocalDateTime.now());
                 pAnswer.setProblemId(problemId);
                 paperAnswerRepository.save(pAnswer);
             }else{
+                //없으면 만들어서 넣어주면서 셋팅후 state 변경
                 PaperAnswer pAnswer = PaperAnswer.builder()
                         .id(new PaperAnswer.PaperAnswerId(paperId, num))
                         .problemId(problemId)
@@ -97,6 +104,7 @@ public class PaperService {
         }, ()->new IllegalArgumentException(paperId+" 시험지를 찾을 수 없습니다."));
     }
 
+    // 시험지 제출
     @Transactional
     public void paperDone(Long paperId){
         // 시험을 끝냈으면 해당 시험지의 답안을 비교해서 채점 한다.
@@ -119,16 +127,19 @@ public class PaperService {
         paperTemplateService.updateCompleteCount(saved.getPaperTemplateId());
     }
 
+    //paper list get
     @Transactional(readOnly = true)
     public List<Paper> getPapers(Long paperTemplateId) {
         return paperRepository.findAllByPaperTemplateId(paperTemplateId);
     }
 
+    // 나에게 배부된 시험지 list get
     @Transactional(readOnly = true)
     public List<Paper> getPapersByUser(Long studyUserId) {
         return paperRepository.findAllByStudyUserIdOrderByCreatedDesc(studyUserId);
     }
 
+    // 완료된, 진행중인 시험지 list
     @Transactional(readOnly = true)
     public List<Paper> getPapersByUserState(Long studyUserId, Paper.PaperState state) {
         return paperRepository.findAllByStudyUserIdAndStateOrderByCreatedDesc(studyUserId, state);

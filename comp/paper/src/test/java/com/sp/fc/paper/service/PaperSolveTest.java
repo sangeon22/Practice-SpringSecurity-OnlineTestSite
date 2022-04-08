@@ -33,6 +33,7 @@ public class PaperSolveTest extends WithPaperTemplateTest {
 
     @Autowired
     private PaperRepository paperRepository;
+
     @Autowired
     private PaperAnswerRepository paperAnswerRepository;
 
@@ -57,6 +58,7 @@ public class PaperSolveTest extends WithPaperTemplateTest {
                 problem(paperTemplate.getPaperTemplateId(), "문제1", "답1"));
         this.problem2 = this.paperTemplateTestHelper.addProblem(paperTemplate.getPaperTemplateId(),
                 problem(paperTemplate.getPaperTemplateId(), "문제2", "답2"));
+        // 학생1에게 시험지 배부
         this.paper = paperService.publishPaper(paperTemplate.getPaperTemplateId(), List.of(study1.getUserId())).get(0);
     }
 

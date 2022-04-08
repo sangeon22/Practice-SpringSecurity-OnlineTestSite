@@ -31,12 +31,14 @@ public class PaperTest extends WithPaperTemplateTest {
 
     @Autowired
     private PaperRepository paperRepository;
+
     @Autowired
     private PaperAnswerRepository paperAnswerRepository;
 
     private PaperService paperService;
 
     private PaperTemplate paperTemplate;
+
     private User study1;
     private User study2;
 
