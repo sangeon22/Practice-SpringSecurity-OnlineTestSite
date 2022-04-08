@@ -29,7 +29,9 @@ public class PaperAnswer {
     @Embeddable
     public static class PaperAnswerId implements Serializable {
         private Long paperId;
-        private Integer num; // 1-base
+
+        // 1-base
+        private Integer num;
     }
 
     @EmbeddedId

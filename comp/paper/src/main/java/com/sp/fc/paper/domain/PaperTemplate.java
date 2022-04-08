@@ -16,6 +16,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name="sp_paper_template")
+// 선생님이 작성하는 시험지
 public class PaperTemplate {
 
     @Id
@@ -31,12 +32,15 @@ public class PaperTemplate {
 
     private int total;
 
+    //PaperTemplate에 Problem을 하나씩 추가하도록
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(foreignKey = @ForeignKey(name="paperTemplateId"))
     private List<Problem> problemList;
 
+    //배부된 시험지 Count
     private long publishedCount;
 
+    //시험을 완료한 시험지 Count
     private long completeCount;
 
     @Column(updatable = false)

@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 })
 @EntityScan(basePackages = {
         "com.sp.fc.paper.domain"
-})
+}) // Paper모듈은 repository와 domain을 스캔하도록
 public class PaperModule {
 
 }

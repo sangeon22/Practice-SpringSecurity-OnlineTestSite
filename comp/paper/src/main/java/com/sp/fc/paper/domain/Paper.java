@@ -34,6 +34,7 @@ public class Paper {
     @Transient
     private User user;
 
+    // Problem마다 answer를 넣도록
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "paper")
     private List<PaperAnswer> paperAnswerList;
 
